@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Executivo | Voz do Cliente — Suporte &amp; CX</title>
+<style>
+  :root{
+    --navy-950:#060a17;
+    --navy-900:#0a1128;
+    --navy-800:#101a35;
+    --surface-1:#101a35;
+    --surface-2:#152146;
+    --surface-3:#1c2c56;
+    --border:rgba(255,255,255,0.08);
+    --border-strong:rgba(255,255,255,0.14);
+    --text-primary:#f5f7fc;
+    --text-secondary:#aab4d4;
+    --text-muted:#7783a6;
+    --grid-line:#233064;
+    --baseline:#31417c;
+
+    --series-canal-1:#3987e5; /* Chat Humano */
+    --series-canal-2:#d95926; /* Chatbot */
+    --series-canal-3:#199e70; /* Telefone */
+    --series-canal-4:#c98500; /* E-mail */
+    --series-canal-5:#d55181; /* WhatsApp */
+
+    --series-seg-1:#3987e5;  /* B2C Standard */
+    --series-seg-2:#199e70;  /* B2C Premium */
+    --series-seg-3:#c98500;  /* B2B PME */
+    --series-seg-4:#9085e9;  /* B2B Corporativo */
+
+    --status-good:#0ca30c;
+    --status-warning:#fab219;
+    --status-serious:#ec835a;
+    --status-critical:#e66767;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--navy-950);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(57,135,229,0.10), transparent 45%),
+      radial-gradient(circle at 88% 92%, rgba(144,133,233,0.08), transparent 40%);
+    color:var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:28px 32px 60px;
+  }
+
+  .wrap{max-width:1320px; margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between;
+    gap:18px; margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid var(--border);
+  }
+  .eyebrow{
+    font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--series-canal-1); font-weight:700; margin:0 0 6px;
+  }
+  h1{font-size:24px; margin:0 0 6px; font-weight:700; letter-spacing:-0.01em;}
+  .subtitle{color:var(--text-secondary); font-size:13.5px; margin:0; max-width:640px; line-height:1.5;}
+
+  .filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .filters label{font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:4px;}
+  select{
+    background:var(--surface-2); color:var(--text-primary); border:1px solid var(--border-strong);
+    border-radius:8px; padding:8px 10px; font-size:13px; min-width:150px; font-family:inherit;
+    appearance:none; -webkit-appearance:none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+    background-position: calc(100% - 16px) center, calc(100% - 11px) center;
+    background-size: 5px 5px, 5px 5px; background-repeat:no-repeat;
+    cursor:pointer;
+  }
+  select:hover{border-color:var(--series-canal-1);}
+  .filter-group{display:flex; flex-direction:column;}
+  .reset-btn{
+    background:transparent; border:1px solid var(--border-strong); color:var(--text-secondary);
+    border-radius:8px; padding:9px 14px; font-size:12.5px; cursor:pointer; align-self:flex-end;
+    height:38px; font-family:inherit;
+  }
+  .reset-btn:hover{border-color:var(--status-critical); color:var(--status-critical);}
+  .n-badge{
+    font-size:11.5px; color:var(--text-muted); align-self:flex-end; height:38px;
+    display:flex; align-items:center; padding:0 4px;
+  }
+  .n-badge b{color:var(--text-primary); font-weight:700;}
+
+  /* ---------- KPI cards ---------- */
+  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px;}
+  .kpi{
+    background:var(--surface-1); border:1px solid var(--border); border-radius:14px;
+    padding:18px 20px; position:relative; overflow:hidden;
+  }
+  .kpi::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:var(--accent, var(--series-canal-1));
+  }
+  .kpi .label{font-size:12px; color:var(--text-secondary); font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+  .kpi .value{font-size:32px; font-weight:700; letter-spacing:-0.02em; line-height:1; font-variant-numeric:proportional-nums;}
+  .kpi .value.critical{color:var(--status-critical);}
+  .kpi .value.warning{color:var(--status-warning);}
+  .kpi .foot{font-size:11.5px; color:var(--text-muted); margin-top:9px; line-height:1.45;}
+  .badge{
+    display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700;
+    padding:2px 7px; border-radius:20px; text-transform:uppercase; letter-spacing:.03em;
+  }
+  .badge.critical{background:rgba(230,103,103,0.16); color:var(--status-critical);}
+  .badge.warning{background:rgba(250,178,25,0.16); color:var(--status-warning);}
+  .badge.good{background:rgba(12,163,12,0.18); color:#4fd44f;}
+
+  /* ---------- Panels ---------- */
+  .panels{display:grid; grid-template-columns:1.05fr 1fr; gap:18px; align-items:stretch;}
+  @media (max-width:980px){ .panels{grid-template-columns:1fr;} .kpi-row{grid-template-columns:repeat(2,1fr);} }
+
+  .panel{
+    background:var(--surface-1); border:1px solid var(--border); border-radius:16px;
+    padding:22px 22px 18px; display:flex; flex-direction:column;
+  }
+  .panel-tag{font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-muted); font-weight:700; margin-bottom:4px;}
+  .panel h2{font-size:16.5px; margin:0 0 3px; font-weight:700;}
+  .panel .desc{font-size:12px; color:var(--text-secondary); margin:0 0 16px; line-height:1.5;}
+
+  .chart-block{margin-bottom:18px;}
+  .chart-title{font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;}
+  .legend{display:flex; gap:12px; flex-wrap:wrap; font-size:11px; color:var(--text-muted); font-weight:600;}
+  .legend .dot{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px; vertical-align:middle;}
+
+  .hbar-row{display:grid; grid-template-columns:128px 1fr 68px; align-items:center; gap:10px; margin-bottom:9px; position:relative;}
+  .hbar-row .cat{font-size:11.5px; color:var(--text-secondary); font-weight:600; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .hbar-track{position:relative; height:20px; background:var(--surface-3); border-radius:5px; overflow:visible;}
+  .hbar-fill{position:absolute; top:0; left:0; height:100%; border-radius:5px; transition:width .5s ease; cursor:pointer;}
+  .hbar-row .val{font-size:12.5px; font-weight:700; color:var(--text-primary); font-variant-numeric:tabular-nums;}
+  .hbar-row .val small{color:var(--text-muted); font-weight:500; font-size:10.5px;}
+
+  .tooltip{
+    position:absolute; background:#0a1128; border:1px solid var(--border-strong); color:var(--text-primary);
+    padding:9px 12px; border-radius:9px; font-size:11.5px; pointer-events:none; z-index:50;
+    box-shadow:0 10px 30px rgba(0,0,0,0.45); display:none; min-width:150px; line-height:1.6;
+  }
+  .tooltip .t-title{font-weight:700; margin-bottom:3px; font-size:12px;}
+  .tooltip .t-row{display:flex; justify-content:space-between; gap:14px; color:var(--text-secondary);}
+  .tooltip .t-row b{color:var(--text-primary); font-weight:700;}
+
+  table.mini{width:100%; border-collapse:collapse; font-size:12px; margin-top:2px;}
+  table.mini th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);
+    font-weight:700; padding:0 8px 8px; border-bottom:1px solid var(--border);
+  }
+  table.mini td{padding:9px 8px; border-bottom:1px solid var(--border); color:var(--text-secondary); font-variant-numeric:tabular-nums;}
+  table.mini tr:last-child td{border-bottom:none;}
+  table.mini td.name{color:var(--text-primary); font-weight:600; font-variant-numeric:normal;}
+  table.mini td.num{text-align:right;}
+
+  .callout{
+    background:linear-gradient(135deg, rgba(230,103,103,0.10), rgba(144,133,233,0.06));
+    border:1px solid rgba(230,103,103,0.25); border-radius:12px; padding:14px 16px; margin-top:auto;
+    font-size:12px; color:var(--text-secondary); line-height:1.6;
+  }
+  .callout b{color:var(--text-primary);}
+  .callout .cflag{color:var(--status-critical); font-weight:700;}
+
+  footer.methodology{
+    margin-top:20px; background:var(--surface-1); border:1px solid var(--border); border-radius:16px;
+    padding:20px 22px;
+  }
+  footer.methodology h3{font-size:13.5px; margin:0 0 12px; color:var(--text-primary);}
+  .method-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:900px){.method-grid{grid-template-columns:1fr;}}
+  .method-item{font-size:11.8px; color:var(--text-secondary); line-height:1.55; border-left:2px solid var(--series-canal-1); padding-left:12px;}
+  .method-item b{color:var(--text-primary); display:block; margin-bottom:3px; font-size:12.3px;}
+
+  .empty-state{color:var(--text-muted); font-size:13px; padding:30px 0; text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow">Aula 2 · FAGEN31805 · Módulo 1</p>
+      <h1>Dashboard Executivo — A Voz dos Dados: Atrito &amp; Encantamento</h1>
+      <p class="subtitle">100 pesquisas de pós-atendimento · métricas calculadas com o rigor metodológico correto (NPS por proporção, mediana onde há outliers) — não a média ingênua que a IA sugere primeiro.</p>
+    </div>
+    <div class="filters">
+      <div class="filter-group">
+        <label for="f-canal">Canal de Atendimento</label>
+        <select id="f-canal"><option value="">Todos os canais</option></select>
+      </div>
+      <div class="filter-group">
+        <label for="f-segmento">Segmento de Cliente</label>
+        <select id="f-segmento"><option value="">Todos os segmentos</option></select>
+      </div>
+      <div class="filter-group">
+        <label for="f-risco">Risco de Churn</label>
+        <select id="f-risco"><option value="">Todos os níveis</option></select>
+      </div>
+      <button class="reset-btn" id="reset-filters">Limpar filtros</button>
+      <div class="n-badge">Amostra: <b>&nbsp;<span id="n-count">100</span></b>&nbsp;clientes</div>
+    </div>
+  </header>
+
+  <section class="kpi-row" id="kpi-row">
+    <div class="kpi" style="--accent:var(--status-critical)">
+      <div class="label">NPS Metodológico <span class="badge critical">Crítico</span></div>
+      <div class="value critical" id="kpi-nps">-21</div>
+      <div class="foot" id="kpi-nps-foot">% Promotores − % Detratores. Nunca a média (que mascararia como 6,3/10).</div>
+    </div>
+    <div class="kpi">
+      <div class="label">CSAT Médio Geral</div>
+      <div class="value" id="kpi-csat">3,19</div>
+      <div class="foot" id="kpi-csat-foot">Escala 1 (péssimo) a 5 (excelente) · satisfação transacional do chamado.</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Tempo Mediano de Resolução</div>
+      <div class="value" id="kpi-tempo">26,8h</div>
+      <div class="foot" id="kpi-tempo-foot">Mediana escolhida por ser imune a outliers de contratos corporativos.</div>
+    </div>
+    <div class="kpi" style="--accent:var(--status-warning)">
+      <div class="label">Taxa de Risco Alto de Churn</div>
+      <div class="value warning" id="kpi-risco">44%</div>
+      <div class="foot" id="kpi-risco-foot">Proporção de clientes classificados em risco "Alto" de cancelamento.</div>
+    </div>
+  </section>
+
+  <section class="panels">
+
+    <div class="panel">
+      <p class="panel-tag">Painel 1 · Operação</p>
+      <h2>Canais de Atendimento: Tempo, Esforço e Risco</h2>
+      <p class="desc">Barras horizontais ordenadas pelo tempo mediano de resolução — o canal mais lento aparece primeiro. CES e % de risco alto ao lado revelam onde a automação está gerando atrito, não eficiência.</p>
+
+      <div class="chart-block">
+        <div class="chart-title">
+          <span>Tempo Mediano de Resolução por Canal (horas)</span>
+        </div>
+        <div id="chart-canal"></div>
+      </div>
+
+      <table class="mini" id="table-canal">
+        <thead>
+          <tr><th>Canal</th><th style="text-align:right">CES médio (1–7)</th><th style="text-align:right">% Risco Alto</th><th style="text-align:right">n</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <p class="panel-tag">Painel 2 · Finanças</p>
+      <h2>Segmentos de Clientes: Faturamento em Risco</h2>
+      <p class="desc">Cruzamento de ticket médio e tempo de resolução por segmento. O B2B concentra o maior faturamento por conta — e o pior atendimento.</p>
+
+      <div class="chart-block">
+        <div class="chart-title"><span>Ticket Médio Mensal por Segmento (R$)</span></div>
+        <div id="chart-seg-valor"></div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-title"><span>Tempo Médio de Resolução por Segmento (horas)</span></div>
+        <div id="chart-seg-tempo"></div>
+      </div>
+
+      <div class="callout" id="callout-seg">
+        <span class="cflag">⚠ Alerta de faturamento sob risco:</span>
+        B2B Corporativo paga em média <b>R$ 3.404,87/mês</b> por conta — mas o <b>B2B PME</b> aguarda um tempo crítico de <b>34,7h</b> para ser resolvido, o pior tempo médio da base. Perder 1 conta corporativa equivale a perder ~33 clientes B2C Standard.
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="methodology">
+    <h3>Validação Crítica do Grupo — por que estes números, e não os da IA "no primeiro chute"</h3>
+    <div class="method-grid">
+      <div class="method-item">
+        <b>NPS: proporção, não média</b>
+        A IA calcula a média da coluna NPS_Score e erra (6,27/10 soa "razoável"). O correto é % Promotores (notas 9–10) − % Detratores (notas 0–6). Resultado real: <b>-21</b> (zona crítica).
+      </div>
+      <div class="method-item">
+        <b>Mediana contra outliers</b>
+        O faturamento médio (R$ 691,67) é puxado por contratos corporativos. A mediana (R$ 214,24) e o tempo mediano de resolução (26,8h) representam melhor o cliente típico.
+      </div>
+      <div class="method-item">
+        <b>Automação ≠ eficiência</b>
+        Chatbot tem o maior tempo médio (35h) e WhatsApp o pior CES (2,38) — ambos elevam o risco de churn, contrariando a suposição de que canais automatizados reduzem custo sem custo de experiência.
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = [{"ID_Cliente": "CLI-7672", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 1, "NPS_Score": 6, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 3, "Valor_Gasto_Mensal_BRL": 253.09, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-1719", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 6, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 19.2, "Valor_Gasto_Mensal_BRL": 138.93, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "18-24", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-9400", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 5, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 9.8, "Valor_Gasto_Mensal_BRL": 801.65, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "25-34", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-2200", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 10.7, "Valor_Gasto_Mensal_BRL": 104.33, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-4823", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 2, "NPS_Score": 1, "CES_Esforco": 4, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 29.2, "Valor_Gasto_Mensal_BRL": 56.79, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-2358", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 4, "NPS_Score": 9, "CES_Esforco": 6, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 23.1, "Valor_Gasto_Mensal_BRL": 222.77, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sul"}, {"ID_Cliente": "CLI-3359", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 1, "NPS_Score": 6, "CES_Esforco": 4, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 29, "Valor_Gasto_Mensal_BRL": 92.39, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-8450", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 1, "NPS_Score": 4, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 50.2, "Valor_Gasto_Mensal_BRL": 263.8, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "35-44", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-2521", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 3, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 52.8, "Valor_Gasto_Mensal_BRL": 59.11, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-9752", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "E-mail", "CSAT_Geral": 5, "NPS_Score": 7, "CES_Esforco": 6, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 34.9, "Valor_Gasto_Mensal_BRL": 810.56, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "18-24", "Regiao": "Sul"}, {"ID_Cliente": "CLI-1859", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 9, "CES_Esforco": 5, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 63.8, "Valor_Gasto_Mensal_BRL": 69.14, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Norte"}, {"ID_Cliente": "CLI-2133", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 4, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 20.5, "Valor_Gasto_Mensal_BRL": 87.75, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "55+", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5505", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 31.2, "Valor_Gasto_Mensal_BRL": 282.68, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5730", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "E-mail", "CSAT_Geral": 1, "NPS_Score": 1, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 33.5, "Valor_Gasto_Mensal_BRL": 79.54, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-9703", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 2, "NPS_Score": 6, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 29.3, "Valor_Gasto_Mensal_BRL": 112.6, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "45-54", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-9475", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 4, "NPS_Score": 10, "CES_Esforco": 6, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 26.4, "Valor_Gasto_Mensal_BRL": 5316.52, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4046", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Telefone", "CSAT_Geral": 1, "NPS_Score": 5, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 27.7, "Valor_Gasto_Mensal_BRL": 149.35, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Sul"}, {"ID_Cliente": "CLI-3281", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 1, "NPS_Score": 1, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 59.3, "Valor_Gasto_Mensal_BRL": 135.76, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-3945", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 5, "NPS_Score": 7, "CES_Esforco": 3, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 25.2, "Valor_Gasto_Mensal_BRL": 64.68, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4380", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 8.8, "Valor_Gasto_Mensal_BRL": 111.21, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "45-54", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-9898", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "E-mail", "CSAT_Geral": 2, "NPS_Score": 2, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 3.3, "Valor_Gasto_Mensal_BRL": 129.06, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Norte"}, {"ID_Cliente": "CLI-2714", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Telefone", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 1.4, "Valor_Gasto_Mensal_BRL": 335.74, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "35-44", "Regiao": "Sul"}, {"ID_Cliente": "CLI-3643", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 1, "NPS_Score": 0, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 24.2, "Valor_Gasto_Mensal_BRL": 214.19, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "45-54", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-6053", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "E-mail", "CSAT_Geral": 4, "NPS_Score": 9, "CES_Esforco": 6, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 9, "Valor_Gasto_Mensal_BRL": 190.85, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-2373", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 1, "NPS_Score": 6, "CES_Esforco": 3, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 71.7, "Valor_Gasto_Mensal_BRL": 1148.86, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4276", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "E-mail", "CSAT_Geral": 5, "NPS_Score": 7, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 33.8, "Valor_Gasto_Mensal_BRL": 58.11, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-2469", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "E-mail", "CSAT_Geral": 4, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 14.1, "Valor_Gasto_Mensal_BRL": 122.71, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "25-34", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-8022", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Telefone", "CSAT_Geral": 1, "NPS_Score": 2, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 35.7, "Valor_Gasto_Mensal_BRL": 375.01, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-3359", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Telefone", "CSAT_Geral": 1, "NPS_Score": 1, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 33.5, "Valor_Gasto_Mensal_BRL": 54.26, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "35-44", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-9041", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 4, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 18.2, "Valor_Gasto_Mensal_BRL": 3061.21, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "45-54", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-7819", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 6, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 29.2, "Valor_Gasto_Mensal_BRL": 68.3, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "45-54", "Regiao": "Sul"}, {"ID_Cliente": "CLI-3929", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 3, "NPS_Score": 6, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 43, "Valor_Gasto_Mensal_BRL": 55.1, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "45-54", "Regiao": "Sul"}, {"ID_Cliente": "CLI-2445", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 5, "Valor_Gasto_Mensal_BRL": 279.76, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "55+", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-8682", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 1, "NPS_Score": 5, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 52.8, "Valor_Gasto_Mensal_BRL": 3861.65, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-2050", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 1, "NPS_Score": 3, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 44.3, "Valor_Gasto_Mensal_BRL": 120.88, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "45-54", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-8156", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "E-mail", "CSAT_Geral": 1, "NPS_Score": 2, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 25.6, "Valor_Gasto_Mensal_BRL": 2618.48, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "55+", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5703", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "E-mail", "CSAT_Geral": 2, "NPS_Score": 6, "CES_Esforco": 3, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 47.2, "Valor_Gasto_Mensal_BRL": 797.36, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5418", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Telefone", "CSAT_Geral": 2, "NPS_Score": 2, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 61.9, "Valor_Gasto_Mensal_BRL": 916.35, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4851", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 6, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 30.7, "Valor_Gasto_Mensal_BRL": 156.27, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "45-54", "Regiao": "Sul"}, {"ID_Cliente": "CLI-3626", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 3, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 22.6, "Valor_Gasto_Mensal_BRL": 138.07, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sul"}, {"ID_Cliente": "CLI-4987", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 27.7, "Valor_Gasto_Mensal_BRL": 113.91, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "18-24", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-1369", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 5, "NPS_Score": 7, "CES_Esforco": 6, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 6.5, "Valor_Gasto_Mensal_BRL": 104.75, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5958", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Telefone", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 20.4, "Valor_Gasto_Mensal_BRL": 2864.05, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Sul"}, {"ID_Cliente": "CLI-4115", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 5, "Valor_Gasto_Mensal_BRL": 139.26, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "18-24", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5954", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 2, "NPS_Score": 1, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 16.4, "Valor_Gasto_Mensal_BRL": 608.11, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "18-24", "Regiao": "Norte"}, {"ID_Cliente": "CLI-6445", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 2, "NPS_Score": 6, "CES_Esforco": 4, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 57, "Valor_Gasto_Mensal_BRL": 191.13, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4693", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 3, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 62.6, "Valor_Gasto_Mensal_BRL": 69.96, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "35-44", "Regiao": "Norte"}, {"ID_Cliente": "CLI-3608", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 1, "NPS_Score": 6, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 67.6, "Valor_Gasto_Mensal_BRL": 223.59, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sul"}, {"ID_Cliente": "CLI-8492", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 8.4, "Valor_Gasto_Mensal_BRL": 125.65, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-9812", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "E-mail", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 10.4, "Valor_Gasto_Mensal_BRL": 3681.82, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Sul"}, {"ID_Cliente": "CLI-7407", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 8, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 34.4, "Valor_Gasto_Mensal_BRL": 344.71, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-3806", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 32.8, "Valor_Gasto_Mensal_BRL": 287.11, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Norte"}, {"ID_Cliente": "CLI-3592", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 5, "Valor_Gasto_Mensal_BRL": 239.5, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Sul"}, {"ID_Cliente": "CLI-9417", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Telefone", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 7.7, "Valor_Gasto_Mensal_BRL": 268.33, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-2056", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 2, "NPS_Score": 3, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 61.3, "Valor_Gasto_Mensal_BRL": 158.04, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-9154", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Telefone", "CSAT_Geral": 2, "NPS_Score": 1, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 39.8, "Valor_Gasto_Mensal_BRL": 65.07, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "18-24", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-9155", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 6, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 9.3, "Valor_Gasto_Mensal_BRL": 76.88, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-5354", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 3, "NPS_Score": 5, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 3.3, "Valor_Gasto_Mensal_BRL": 324.09, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "45-54", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-9461", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 9, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 19.1, "Valor_Gasto_Mensal_BRL": 1184.36, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4336", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "E-mail", "CSAT_Geral": 3, "NPS_Score": 7, "CES_Esforco": 4, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 36.6, "Valor_Gasto_Mensal_BRL": 1149.01, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "55+", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-6547", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 61.6, "Valor_Gasto_Mensal_BRL": 3618.99, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "18-24", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5064", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 8, "CES_Esforco": 3, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 26.2, "Valor_Gasto_Mensal_BRL": 214.28, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5061", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 6, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 44.4, "Valor_Gasto_Mensal_BRL": 139.95, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "18-24", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-4660", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "E-mail", "CSAT_Geral": 1, "NPS_Score": 0, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 27.2, "Valor_Gasto_Mensal_BRL": 50.76, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4636", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 3, "NPS_Score": 5, "CES_Esforco": 3, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 7.4, "Valor_Gasto_Mensal_BRL": 932.71, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-3420", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "E-mail", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 6, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 15.5, "Valor_Gasto_Mensal_BRL": 3747.03, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "18-24", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-5223", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 6, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 22.2, "Valor_Gasto_Mensal_BRL": 346.89, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sul"}, {"ID_Cliente": "CLI-5633", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "E-mail", "CSAT_Geral": 1, "NPS_Score": 5, "CES_Esforco": 4, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 27.6, "Valor_Gasto_Mensal_BRL": 132.99, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "45-54", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-8829", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Telefone", "CSAT_Geral": 2, "NPS_Score": 2, "CES_Esforco": 3, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 32.3, "Valor_Gasto_Mensal_BRL": 272.48, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4065", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 4, "CES_Esforco": 4, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 69.2, "Valor_Gasto_Mensal_BRL": 373.43, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Sul"}, {"ID_Cliente": "CLI-4390", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 2, "NPS_Score": 5, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 49, "Valor_Gasto_Mensal_BRL": 5790.87, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "55+", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-5707", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 3, "NPS_Score": 2, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 30.1, "Valor_Gasto_Mensal_BRL": 79.07, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5463", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 25.9, "Valor_Gasto_Mensal_BRL": 2589.42, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-6990", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Telefone", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 24, "Valor_Gasto_Mensal_BRL": 946.11, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-4682", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 7, "CES_Esforco": 3, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 34.5, "Valor_Gasto_Mensal_BRL": 150.39, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "45-54", "Regiao": "Sul"}, {"ID_Cliente": "CLI-2930", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 69.9, "Valor_Gasto_Mensal_BRL": 224.82, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "18-24", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4502", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Telefone", "CSAT_Geral": 2, "NPS_Score": 6, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 39.4, "Valor_Gasto_Mensal_BRL": 2358.45, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Sul"}, {"ID_Cliente": "CLI-3026", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "Telefone", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 4, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 2.4, "Valor_Gasto_Mensal_BRL": 2061.9, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "45-54", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-7378", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 7, "CES_Esforco": 4, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 33.1, "Valor_Gasto_Mensal_BRL": 818.2, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "45-54", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-6771", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 5, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 43.5, "Valor_Gasto_Mensal_BRL": 334.28, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "18-24", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-5627", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 1, "NPS_Score": 3, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 20.9, "Valor_Gasto_Mensal_BRL": 146.05, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-7997", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 3, "NPS_Score": 6, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 67.7, "Valor_Gasto_Mensal_BRL": 57.7, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4144", "Segmento_Cliente": "B2B Corporativo", "Canal_Atendimento": "E-mail", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 3.9, "Valor_Gasto_Mensal_BRL": 2692.89, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Norte"}, {"ID_Cliente": "CLI-1866", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 6, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 26.2, "Valor_Gasto_Mensal_BRL": 261.22, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "45-54", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-8633", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 1, "NPS_Score": 2, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 16.5, "Valor_Gasto_Mensal_BRL": 77.93, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "25-34", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-9456", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "WhatsApp", "CSAT_Geral": 3, "NPS_Score": 5, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 8.4, "Valor_Gasto_Mensal_BRL": 280.97, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "55+", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-4806", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 8, "CES_Esforco": 6, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 13.6, "Valor_Gasto_Mensal_BRL": 1283.97, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-2532", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 3, "NPS_Score": 4, "CES_Esforco": 1, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 57, "Valor_Gasto_Mensal_BRL": 130.44, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-8400", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 22.9, "Valor_Gasto_Mensal_BRL": 268.66, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "25-34", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-8776", "Segmento_Cliente": "B2C Premium", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 4, "NPS_Score": 7, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 1.5, "Valor_Gasto_Mensal_BRL": 386.67, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-2598", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Telefone", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 6, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 27.5, "Valor_Gasto_Mensal_BRL": 88.86, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "45-54", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-1915", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 8, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 17.3, "Valor_Gasto_Mensal_BRL": 85.6, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "45-54", "Regiao": "Sul"}, {"ID_Cliente": "CLI-8314", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 1, "NPS_Score": 6, "CES_Esforco": 4, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 8.5, "Valor_Gasto_Mensal_BRL": 59.32, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "35-44", "Regiao": "Centro-Oeste"}, {"ID_Cliente": "CLI-5926", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 3, "NPS_Score": 7, "CES_Esforco": 4, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 14, "Valor_Gasto_Mensal_BRL": 100.56, "Motivo_Contato": "Informações de Produto", "Faixa_Etaria": "18-24", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-9095", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 2, "NPS_Score": 1, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 46, "Valor_Gasto_Mensal_BRL": 116.71, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "55+", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-2800", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 8, "CES_Esforco": 5, "Risco_Churn": "Médio", "Tempo_Resolucao_Horas": 23, "Valor_Gasto_Mensal_BRL": 100.58, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "25-34", "Regiao": "Sul"}, {"ID_Cliente": "CLI-2935", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 5, "NPS_Score": 9, "CES_Esforco": 5, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 18.2, "Valor_Gasto_Mensal_BRL": 141.78, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "55+", "Regiao": "Sudeste"}, {"ID_Cliente": "CLI-6487", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "Chatbot", "CSAT_Geral": 1, "NPS_Score": 6, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 44.9, "Valor_Gasto_Mensal_BRL": 840.49, "Motivo_Contato": "Suporte Técnico", "Faixa_Etaria": "45-54", "Regiao": "Sul"}, {"ID_Cliente": "CLI-4371", "Segmento_Cliente": "B2B PME", "Canal_Atendimento": "E-mail", "CSAT_Geral": 5, "NPS_Score": 10, "CES_Esforco": 7, "Risco_Churn": "Baixo", "Tempo_Resolucao_Horas": 65.8, "Valor_Gasto_Mensal_BRL": 595.53, "Motivo_Contato": "Cancelamento/Renovação", "Faixa_Etaria": "45-54", "Regiao": "Nordeste"}, {"ID_Cliente": "CLI-6581", "Segmento_Cliente": "B2C Standard", "Canal_Atendimento": "Chat Humano", "CSAT_Geral": 3, "NPS_Score": 6, "CES_Esforco": 2, "Risco_Churn": "Alto", "Tempo_Resolucao_Horas": 2.2, "Valor_Gasto_Mensal_BRL": 133.47, "Motivo_Contato": "Dúvida sobre Fatura", "Faixa_Etaria": "35-44", "Regiao": "Sudeste"}];
+
+const CANAL_COLORS = {
+  "Chat Humano": "var(--series-canal-1)",
+  "Chatbot": "var(--series-canal-2)",
+  "Telefone": "var(--series-canal-3)",
+  "E-mail": "var(--series-canal-4)",
+  "WhatsApp": "var(--series-canal-5)"
+};
+const SEG_COLORS = {
+  "B2C Standard": "var(--series-seg-1)",
+  "B2C Premium": "var(--series-seg-2)",
+  "B2B PME": "var(--series-seg-3)",
+  "B2B Corporativo": "var(--series-seg-4)"
+};
+const SEG_ORDER = ["B2C Standard","B2C Premium","B2B PME","B2B Corporativo"];
+const CANAL_ORDER = ["Chat Humano","Chatbot","Telefone","E-mail","WhatsApp"];
+
+function median(arr){
+  if(!arr.length) return 0;
+  const s = [...arr].sort((a,b)=>a-b);
+  const mid = Math.floor(s.length/2);
+  return s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2;
+}
+function mean(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+function fmtNum(n, d=1){ return n.toLocaleString('pt-BR', {minimumFractionDigits:d, maximumFractionDigits:d}); }
+function fmtBRL(n){ return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0}); }
+
+function populateSelect(id, values){
+  const sel = document.getElementById(id);
+  values.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    sel.appendChild(opt);
+  });
+}
+populateSelect('f-canal', CANAL_ORDER);
+populateSelect('f-segmento', SEG_ORDER);
+populateSelect('f-risco', ["Alto","Médio","Baixo"]);
+
+const tooltip = document.getElementById('tooltip');
+function showTooltip(evt, html){
+  tooltip.innerHTML = html;
+  tooltip.style.display = 'block';
+  const x = evt.clientX + window.scrollX + 14;
+  const y = evt.clientY + window.scrollY + 14;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+function hideTooltip(){ tooltip.style.display = 'none'; }
+
+function renderHBar(containerId, rows, opts){
+  // rows: [{label, value, color, sub}]
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  if(!rows.length){
+    container.innerHTML = '<div class="empty-state">Sem dados para este filtro.</div>';
+    return;
+  }
+  const max = Math.max(...rows.map(r=>r.value)) * 1.08 || 1;
+  rows.forEach(r=>{
+    const row = document.createElement('div');
+    row.className = 'hbar-row';
+    const pct = Math.max((r.value/max)*100, 2);
+    row.innerHTML = `
+      <div class="cat">${r.label}</div>
+      <div class="hbar-track">
+        <div class="hbar-fill" style="width:${pct}%; background:${r.color};"></div>
+      </div>
+      <div class="val">${r.display}${r.subDisplay ? '<br><small>'+r.subDisplay+'</small>' : ''}</div>
+    `;
+    const fill = row.querySelector('.hbar-fill');
+    fill.addEventListener('mousemove', (e)=> showTooltip(e, `<div class="t-title">${r.label}</div><div class="t-row"><span>${opts.metricLabel}</span><b>${r.display}</b></div>${r.tooltipExtra || ''}`));
+    fill.addEventListener('mouseleave', hideTooltip);
+    container.appendChild(row);
+  });
+}
+
+function computeAndRender(){
+  const canal = document.getElementById('f-canal').value;
+  const segmento = document.getElementById('f-segmento').value;
+  const risco = document.getElementById('f-risco').value;
+
+  const filtered = DATA.filter(d =>
+    (!canal || d.Canal_Atendimento === canal) &&
+    (!segmento || d.Segmento_Cliente === segmento) &&
+    (!risco || d.Risco_Churn === risco)
+  );
+
+  document.getElementById('n-count').textContent = filtered.length;
+
+  if(filtered.length === 0){
+    ['kpi-nps','kpi-csat','kpi-tempo','kpi-risco'].forEach(id=>document.getElementById(id).textContent = '—');
+    renderHBar('chart-canal', [], {});
+    renderHBar('chart-seg-valor', [], {});
+    renderHBar('chart-seg-tempo', [], {});
+    document.querySelector('#table-canal tbody').innerHTML = '<tr><td colspan="4" style="text-align:center; padding:16px;">Sem dados para este filtro.</td></tr>';
+    return;
+  }
+
+  // ---- KPIs ----
+  const n = filtered.length;
+  const nps = filtered.map(d=>d.NPS_Score);
+  const promoters = nps.filter(v=>v>=9).length;
+  const detractors = nps.filter(v=>v<=6).length;
+  const npsScore = Math.round(((promoters/n)*100 - (detractors/n)*100));
+  const csat = mean(filtered.map(d=>d.CSAT_Geral));
+  const tempoMed = median(filtered.map(d=>d.Tempo_Resolucao_Horas));
+  const altoRisco = filtered.filter(d=>d.Risco_Churn === "Alto").length;
+  const riscoPct = Math.round((altoRisco/n)*100);
+
+  const npsEl = document.getElementById('kpi-nps');
+  npsEl.textContent = (npsScore > 0 ? '+' : '') + npsScore;
+  npsEl.className = 'value ' + (npsScore < 0 ? 'critical' : (npsScore < 30 ? 'warning' : ''));
+  document.getElementById('kpi-nps-foot').innerHTML = `Promotores ${Math.round(promoters/n*100)}% − Detratores ${Math.round(detractors/n*100)}%. % Promotores − % Detratores (nunca a média).`;
+
+  document.getElementById('kpi-csat').textContent = fmtNum(csat,2).replace('.',',');
+  document.getElementById('kpi-tempo').textContent = fmtNum(tempoMed,1).replace('.',',') + 'h';
+
+  const riscoEl = document.getElementById('kpi-risco');
+  riscoEl.textContent = riscoPct + '%';
+  riscoEl.className = 'value ' + (riscoPct >= 40 ? 'warning' : (riscoPct >=25 ? '' : ''));
+  document.getElementById('kpi-risco-foot').textContent = `${altoRisco} de ${n} clientes em risco "Alto" de cancelamento.`;
+
+  // ---- Panel 1: Canal ----
+  const canalGroups = {};
+  CANAL_ORDER.forEach(c=>canalGroups[c]=[]);
+  filtered.forEach(d=>{ if(!canalGroups[d.Canal_Atendimento]) canalGroups[d.Canal_Atendimento]=[]; canalGroups[d.Canal_Atendimento].push(d); });
+
+  const canalRows = Object.entries(canalGroups)
+    .filter(([c, arr])=>arr.length>0)
+    .map(([c, arr])=>({
+      label:c,
+      value: median(arr.map(d=>d.Tempo_Resolucao_Horas)),
+      display: fmtNum(median(arr.map(d=>d.Tempo_Resolucao_Horas)),1).replace('.',',')+'h',
+      color: CANAL_COLORS[c] || 'var(--series-canal-1)',
+      arr
+    }))
+    .sort((a,b)=>b.value-a.value);
+
+  canalRows.forEach(r=>{
+    const ces = mean(r.arr.map(d=>d.CES_Esforco));
+    const altoP = Math.round(r.arr.filter(d=>d.Risco_Churn==='Alto').length / r.arr.length * 100);
+    r.tooltipExtra = `<div class="t-row"><span>CES médio</span><b>${fmtNum(ces,2).replace('.',',')}</b></div><div class="t-row"><span>% Risco Alto</span><b>${altoP}%</b></div><div class="t-row"><span>n</span><b>${r.arr.length}</b></div>`;
+  });
+
+  renderHBar('chart-canal', canalRows, {metricLabel:'Tempo mediano'});
+
+  const tbody = document.querySelector('#table-canal tbody');
+  tbody.innerHTML = '';
+  canalRows.forEach(r=>{
+    const ces = mean(r.arr.map(d=>d.CES_Esforco));
+    const altoP = Math.round(r.arr.filter(d=>d.Risco_Churn==='Alto').length / r.arr.length * 100);
+    const badgeClass = altoP >= 50 ? 'critical' : (altoP >= 30 ? 'warning' : 'good');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="name">${r.label}</td><td class="num">${fmtNum(ces,2).replace('.',',')}</td><td class="num"><span class="badge ${badgeClass}">${altoP}%</span></td><td class="num">${r.arr.length}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // ---- Panel 2: Segmento ----
+  const segGroups = {};
+  SEG_ORDER.forEach(s=>segGroups[s]=[]);
+  filtered.forEach(d=>{ if(!segGroups[d.Segmento_Cliente]) segGroups[d.Segmento_Cliente]=[]; segGroups[d.Segmento_Cliente].push(d); });
+
+  const segValorRows = Object.entries(segGroups)
+    .filter(([s,arr])=>arr.length>0)
+    .map(([s,arr])=>{
+      const avg = mean(arr.map(d=>d.Valor_Gasto_Mensal_BRL));
+      return {label:s, value:avg, display: fmtBRL(avg), color: SEG_COLORS[s] || 'var(--series-seg-1)', arr};
+    })
+    .sort((a,b)=>b.value-a.value);
+  segValorRows.forEach(r=>{
+    r.tooltipExtra = `<div class="t-row"><span>Mediana</span><b>${fmtBRL(median(r.arr.map(d=>d.Valor_Gasto_Mensal_BRL)))}</b></div><div class="t-row"><span>n</span><b>${r.arr.length}</b></div>`;
+  });
+  renderHBar('chart-seg-valor', segValorRows, {metricLabel:'Ticket médio'});
+
+  const segTempoRows = Object.entries(segGroups)
+    .filter(([s,arr])=>arr.length>0)
+    .map(([s,arr])=>{
+      const avg = mean(arr.map(d=>d.Tempo_Resolucao_Horas));
+      return {label:s, value:avg, display: fmtNum(avg,1).replace('.',',')+'h', color: SEG_COLORS[s] || 'var(--series-seg-1)', arr};
+    })
+    .sort((a,b)=>b.value-a.value);
+  segTempoRows.forEach(r=>{
+    r.tooltipExtra = `<div class="t-row"><span>n</span><b>${r.arr.length}</b></div>`;
+  });
+  renderHBar('chart-seg-tempo', segTempoRows, {metricLabel:'Tempo médio'});
+}
+
+document.getElementById('f-canal').addEventListener('change', computeAndRender);
+document.getElementById('f-segmento').addEventListener('change', computeAndRender);
+document.getElementById('f-risco').addEventListener('change', computeAndRender);
+document.getElementById('reset-filters').addEventListener('click', ()=>{
+  document.getElementById('f-canal').value = '';
+  document.getElementById('f-segmento').value = '';
+  document.getElementById('f-risco').value = '';
+  computeAndRender();
+});
+
+computeAndRender();
+</script>
+</body>
+</html>
